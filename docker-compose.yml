@@ -1,0 +1,46 @@
+# statgen/docker-compose.yml
+
+version: '3.8'
+
+services:
+
+  django_backend:
+    build: ./backend
+    container_name: statgen_django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - r_api
+      - java-api
+
+  r_api:
+    build: ./r_api
+    container_name: statgen_r
+    volumes:
+      - ./r_api:/home/docker
+    ports:
+      - "8001:8001"
+
+  java-api:
+    build: ./java-api
+    container_name: statgen_java
+    # A linha de 'volumes' foi REMOVIDA para o serviço Java
+    ports:
+      - "8080:8080"
+      
+  next_frontend:
+    build: ./frontend
+    container_name: statgen_next
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    # A linha 'command' SOBRESCREVE o CMD do Dockerfile.
+    # Rodamos o servidor de desenvolvimento para ter live-reload.
+    command: npm run dev
+    depends_on:
+      - django_backend
