@@ -1,0 +1,3 @@
+*.tar.gz
+*.tar.xz
+*.tmp  # Ou outros temporários que quiser ignorar
